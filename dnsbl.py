@@ -1,25 +1,32 @@
 import gevent
 from gevent import socket
-from gevent.pool import Pool
 
 class Base(object):
     """A simple DNSBL backend."""
 
-    def __init__(self, ip=None, provider=None, pool_size=None):
+    def __init__(self, ip=None, providers=[], timeout=2):
         self.ip = ip
-        self.provider = provider
-        self.pool = Pool(size=pool_size)
+        self.providers = providers
+        self.timeout = timeout
 
-    def build_query(self):
+    def build_query(self, provider):
         reverse = '.'.join(reversed(self.ip.split('.')))
-        return '{reverse}.{provider}.'.format(reverse=reverse, provider=self.provider)
+        return '{reverse}.{provider}.'.format(reverse=reverse, provider=provider)
 
-    def query(self):
+    def query(self, provider):
         try:
-            result = socket.gethostbyname(self.build_query())
+            result = socket.gethostbyname(self.build_query(provider))
         except socket.gaierror:
             result = False
-        return self.provider, result
+        return provider, result
 
     def check(self):
-        return self.pool.apply(self.query)
+        results = []
+        jobs = [gevent.spawn(self.query, provider) for provider in self.providers]
+        gevent.joinall(jobs, self.timeout)
+        for job in jobs:
+            if job.successful():
+                results.append(job.value)
+            else:
+                results.append((job.args[0], None))
+        return results
