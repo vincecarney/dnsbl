@@ -1,5 +1,5 @@
-DNSBL.py
-========
+DNSBL
+=====
 
 Simple backend to query DNS-based Blackhole Lists.
 
