@@ -9,7 +9,8 @@ Usage
 -----
 Check out the examples folder...
 
-
-    def dnsbl_check(ip):
-        backend = Base(ip=ip, providers=BASE_PROVIDERS)
-        return backend.check()
+```python
+def dnsbl_check(ip):
+    backend = Base(ip=ip, providers=BASE_PROVIDERS)
+    return backend.check()
+```
