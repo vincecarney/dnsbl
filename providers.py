@@ -1,6 +1,7 @@
 BASE_PROVIDERS = [
     'aspews.ext.sorbs.net',
     'b.barracudacentral.org',
+    'bad.psky.me',
     'bl.deadbeef.com',
     'bl.emailbasura.org',
     'bl.spamcannibal.org',
